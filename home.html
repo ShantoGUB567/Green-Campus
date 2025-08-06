@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GUB Campus App - Student Dashboard (Canvas)</title>
+    <style>
+        /* Import Google Fonts for a modern look */
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f0f2f5; /* Light grey background for the page */
+            display: flex; /* Use flexbox to center the canvas */
+            justify-content: center;
+            /* align-items: center; */ /* Removed to allow vertical scrolling if canvas is taller */
+            min-height: 100vh; /* Minimum full viewport height */
+            margin: 0; /* Remove default body margin */
+            overflow-y: auto; /* Allow vertical scrolling on the body */
+            padding: 20px 0; /* Add some vertical padding for better appearance */
+            box-sizing: border-box; /* Include padding in element's total width and height */
+        }
+        canvas {
+            border: 1px solid #ccc; /* Light border around the canvas */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+            background-color: #fff; /* White background for the canvas itself */
+            border-radius: 15px; /* Rounded corners for the canvas */
+            max-width: 400px; /* Ensure canvas doesn't get too wide on larger screens */
+            width: 100%; /* Make canvas responsive within its max-width */
+            display: block; /* Remove extra space below canvas */
+        }
+    </style>
+</head>
+<body>
+    <!-- The HTML Canvas element where the UI will be drawn -->
+    <canvas id="dashboardCanvas" width="400" height="1200"></canvas> <!-- Increased height for more content -->
+
+    <script>
+        // Get the canvas element and its 2D rendering context
+        const canvas = document.getElementById('dashboardCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Function to draw a rounded rectangle (not native to canvas, so we define it)
+        CanvasRenderingContext2D.prototype.roundRect = function (x, y, width, height, radius) {
+            if (typeof radius === 'undefined') {
+                radius = 5; // Default radius
+            }
+            this.moveTo(x + radius, y);
+            this.lineTo(x + width - radius, y);
+            this.quadraticCurveTo(x + width, y, x + width, y + radius);
+            this.lineTo(x + width, y + height - radius);
+            this.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+            this.lineTo(x + radius, y + height);
+            this.quadraticCurveTo(x, y + height, x, y + height - radius);
+            this.lineTo(x, y + radius);
+            this.quadraticCurveTo(x, y, x + radius, y);
+            return this;
+        };
+
+        // Main function to draw the entire UI
+        function drawUI() {
+            // Clear the entire canvas and set a background color
+            ctx.fillStyle = '#f0f2f5'; // Light grey background for the canvas
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Draw the header section
+            drawHeader();
+
+            // Draw the main content area
+            drawMainContent();
+
+            // Draw the bottom navigation bar
+            drawBottomNav();
+        }
+
+        // Function to draw the top header bar
+        function drawHeader() {
+            ctx.fillStyle = '#004d40'; // Dark green color for the header
+            ctx.beginPath(); // Start a new path for drawing
+            // Define the shape of the header with rounded bottom corners
+            ctx.moveTo(0, 0);
+            ctx.lineTo(canvas.width, 0);
+            ctx.lineTo(canvas.width, 80);
+            ctx.arcTo(canvas.width, 100, canvas.width - 20, 100, 20); // Bottom-right rounded corner
+            ctx.lineTo(20, 100);
+            ctx.arcTo(0, 100, 0, 80, 20); // Bottom-left rounded corner
+            ctx.closePath(); // Close the path to form a complete shape
+            ctx.fill(); // Fill the shape with the current fillStyle
+
+            // Draw Drawer icon (left side)
+            ctx.fillStyle = '#fff'; // White color for the icon
+            ctx.font = '24px Arial'; // Font style for emoji icon
+            ctx.textAlign = 'left';
+            ctx.fillText('☰', 20, 55); // Drawer icon
+
+            // Draw Search bar (represented as a rounded rectangle with placeholder text)
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.2)'; // Semi-transparent white
+            ctx.beginPath();
+            ctx.roundRect(60, 35, canvas.width - 150, 40, 10); // x, y, width, height, radius
+            ctx.fill();
+            ctx.fillStyle = '#fff';
+            ctx.font = '400 14px Roboto';
+            ctx.fillText('Search...', 75, 60);
+
+            // Draw Notification icon (most right side)
+            ctx.font = '24px Arial';
+            ctx.fillText('🔔', canvas.width - 45, 55); // Notification icon
+            
+            // Draw notification badge
+            ctx.fillStyle = '#e53935'; // Red color for the badge
+            ctx.beginPath();
+            ctx.arc(canvas.width - 35, 42, 6, 0, 2 * Math.PI); // Draw a small circle for the badge
+            ctx.fill();
+            ctx.fillStyle = '#fff'; // White text color for the badge number
+            ctx.font = '10px Arial';
+            ctx.fillText('3', canvas.width - 38, 45); // Notification count
+        }
+
+        // Function to draw the main content area of the dashboard
+        function drawMainContent() {
+            let startY = 120; // Starting Y position for content below the header
+            const paddingX = 20;
+
+            // --- Greetings Box ---
+            ctx.fillStyle = '#fff'; // White background for the greetings box
+            ctx.beginPath();
+            ctx.roundRect(paddingX, startY, canvas.width - (paddingX * 2), 70, 15);
+            ctx.fill();
+            ctx.strokeStyle = '#e0e0e0'; // Light grey border
+            ctx.stroke();
+
+            ctx.fillStyle = '#333'; // Dark grey text color
+            ctx.font = '700 20px Roboto';
+            ctx.textAlign = 'left';
+            ctx.fillText('Hey Abdur Rahman!', paddingX + 15, startY + 30); // Dynamic name placeholder
+            ctx.font = '400 14px Roboto';
+            ctx.fillText('Student ID: 12345', paddingX + 15, startY + 55);
+            startY += 90; // Move Y position down for the next section
+
+            // --- Two Main Focus Boxes (Canteen & Transport) ---
+            const cardWidth = (canvas.width - (paddingX * 3)) / 2; // (Canvas width - (20px padding * 2) - (20px gap)) / 2 cards
+            const cardHeight = 100;
+            const cardGap = paddingX;
+
+            drawMainFocusCard(paddingX, startY, cardWidth, cardHeight, '🍔', 'Canteen Pre-Order', '#e8f5e9'); // Light green background
+            drawMainFocusCard(paddingX + cardWidth + cardGap, startY, cardWidth, cardHeight, '🚌', 'Transport Booking', '#e8f5e9'); // Light green background
+            startY += cardHeight + cardGap + 10; // Update Y position after cards
+
+            // --- Academic Tools Container ---
+            ctx.fillStyle = '#333';
+            ctx.font = '500 18px Roboto';
+            ctx.fillText('Academic Tools', paddingX, startY);
+            startY += 25;
+
+            const academicCardWidth = (canvas.width - (paddingX * 3)) / 2;
+            const academicCardHeight = 80;
+            const academicCardGap = paddingX;
+
+            drawAcademicToolCard(paddingX, startY, academicCardWidth, academicCardHeight, '💰', 'Tuition Fees Calculator');
+            drawAcademicToolCard(paddingX + academicCardWidth + academicCardGap, startY, academicCardWidth, academicCardHeight, '📊', 'CGPA Calculator');
+            startY += academicCardHeight + academicCardGap;
+
+            drawAcademicToolCard(paddingX, startY, academicCardWidth, academicCardHeight, ' attendance', 'Attendance Mark Calculator'); // Using text for icon
+            drawAcademicToolCard(paddingX + academicCardWidth + academicCardGap, startY, academicCardWidth, academicCardHeight, '🗓️', 'Routine Generator');
+            startY += academicCardHeight + academicCardGap;
+
+            drawAcademicToolCard(paddingX, startY, academicCardWidth, academicCardHeight, '📆', 'Academic Calendar');
+            drawAcademicToolCard(paddingX + academicCardWidth + academicCardGap, startY, academicCardWidth, academicCardHeight, '🖥️', 'Student Portal');
+            startY += academicCardHeight + academicCardGap + 10;
+
+            // --- Information Container ---
+            ctx.fillStyle = '#333';
+            ctx.font = '500 18px Roboto';
+            ctx.fillText('Information', paddingX, startY);
+            startY += 25;
+
+            const infoItemHeight = 50;
+            const infoItemGap = 10;
+
+            drawInfoItem(paddingX, startY, '🏛️', 'Campus Info');
+            drawInfoItem(paddingX, startY + infoItemHeight + infoItemGap, '👨‍🏫', 'Faculty Info');
+            drawInfoItem(paddingX, startY + (infoItemHeight + infoItemGap) * 2, '🎉', 'Clubs Info');
+            drawInfoItem(paddingX, startY + (infoItemHeight + infoItemGap) * 3, '📞', 'Important Contacts');
+            startY += (infoItemHeight + infoItemGap) * 4 + 10;
+
+            // --- Websites Container ---
+            ctx.fillStyle = '#333';
+            ctx.font = '500 18px Roboto';
+            ctx.fillText('Websites', paddingX, startY);
+            startY += 25;
+
+            const websiteCardWidth = 120;
+            const websiteCardHeight = 60;
+            const websiteCardGap = 15;
+            let currentWebsiteX = paddingX;
+
+            // Simulate horizontal scroll by drawing items side-by-side
+            drawWebsiteCard(currentWebsiteX, startY, websiteCardWidth, websiteCardHeight, '🌐', 'Official Website');
+            currentWebsiteX += websiteCardWidth + websiteCardGap;
+            drawWebsiteCard(currentWebsiteX, startY, websiteCardWidth, websiteCardHeight, '💻', 'CSE Dept. Website');
+            currentWebsiteX += websiteCardWidth + websiteCardGap;
+            drawWebsiteCard(currentWebsiteX, startY, websiteCardWidth, websiteCardHeight, '🎨', 'Art Club Website');
+            // More items would be drawn off-screen to imply scrolling
+        }
+
+        // Helper function to draw the main focus cards (Canteen & Transport)
+        function drawMainFocusCard(x, y, width, height, icon, text, bgColor) {
+            ctx.fillStyle = bgColor; // Background color for the card
+            ctx.beginPath();
+            ctx.roundRect(x, y, width, height, 15);
+            ctx.fill();
+            ctx.strokeStyle = '#d0d0d0'; // Light grey border
+            ctx.stroke();
+
+            ctx.fillStyle = '#004d40'; // Green color for the icon
+            ctx.font = '40px Arial'; // Larger icon size
+            ctx.textAlign = 'center';
+            ctx.fillText(icon, x + width / 2, y + 45);
+            
+            ctx.fillStyle = '#333'; // Dark grey text color
+            ctx.font = '500 16px Roboto';
+            ctx.fillText(text, x + width / 2, y + 80);
+        }
+
+        // Helper function to draw an academic tool card
+        function drawAcademicToolCard(x, y, width, height, icon, text) {
+            ctx.fillStyle = '#fff'; // White background
+            ctx.beginPath();
+            ctx.roundRect(x, y, width, height, 10);
+            ctx.fill();
+            ctx.strokeStyle = '#e0e0e0';
+            ctx.stroke();
+
+            ctx.fillStyle = '#004d40';
+            ctx.font = '28px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(icon, x + width / 2, y + 35);
+            
+            ctx.fillStyle = '#333';
+            ctx.font = '400 13px Roboto';
+            ctx.fillText(text, x + width / 2, y + 65);
+        }
+
+        // Helper function to draw an information item
+        function drawInfoItem(x, y, icon, text) {
+            const itemWidth = canvas.width - (x * 2);
+            const itemHeight = 50;
+            ctx.fillStyle = '#fff';
+            ctx.beginPath();
+            ctx.roundRect(x, y, itemWidth, itemHeight, 10);
+            ctx.fill();
+            ctx.strokeStyle = '#e0e0e0';
+            ctx.stroke();
+
+            ctx.fillStyle = '#004d40';
+            ctx.font = '24px Arial';
+            ctx.textAlign = 'left';
+            ctx.fillText(icon, x + 15, y + 32);
+            
+            ctx.fillStyle = '#333';
+            ctx.font = '500 15px Roboto';
+            ctx.fillText(text, x + 60, y + 32);
+        }
+
+        // Helper function to draw a website card (for horizontal scrolling simulation)
+        function drawWebsiteCard(x, y, width, height, icon, text) {
+            ctx.fillStyle = '#fff';
+            ctx.beginPath();
+            ctx.roundRect(x, y, width, height, 10);
+            ctx.fill();
+            ctx.strokeStyle = '#e0e0e0';
+            ctx.stroke();
+
+            ctx.fillStyle = '#004d40';
+            ctx.font = '28px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(icon, x + width / 2, y + 25);
+            
+            ctx.fillStyle = '#333';
+            ctx.font = '400 12px Roboto';
+            ctx.fillText(text, x + width / 2, y + 48);
+        }
+
+        // Function to draw the bottom navigation bar
+        function drawBottomNav() {
+            const navY = canvas.height - 60; // Y position for the bottom nav bar
+            const navItemWidth = canvas.width / 3; // Divide canvas width by 3 for 3 nav items
+            
+            ctx.fillStyle = '#fff'; // White background for the nav bar
+            ctx.fillRect(0, navY, canvas.width, 60); // Draw the nav bar rectangle
+            ctx.strokeStyle = '#eee';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(0, navY);
+            ctx.lineTo(canvas.width, navY);
+            ctx.stroke();
+
+            // Draw each navigation item
+            drawNavItem(navItemWidth * 0, navY, navItemWidth, '🏠', 'Home', true); // Home (active)
+            drawNavItem(navItemWidth * 1, navY, navItemWidth, '🎉', 'Club', false); // Club
+            drawNavItem(navItemWidth * 2, navY, navItemWidth, '👤', 'Profile', false); // Profile
+        }
+
+        // Helper function to draw a single navigation item
+        function drawNavItem(x, y, width, icon, text, active) {
+            ctx.fillStyle = active ? '#004d40' : '#777'; // Green if active, grey otherwise
+            ctx.font = '24px Arial'; // Icon font size
+            ctx.textAlign = 'center'; // Center icon
+            ctx.fillText(icon, x + width / 2, y + 25);
+            
+            ctx.font = '400 12px Roboto'; // Text font size
+            ctx.fillText(text, x + width / 2, y + 45);
+        }
+
+        // Call the main drawing function to render the UI when the script loads
+        drawUI();
+    </script>
+</body>
+</html>

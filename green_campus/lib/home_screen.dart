@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'widgets/app_drawer.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -151,40 +152,50 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildFocusBox(String title, IconData icon) {
-    return Container(
-      height: 130, // Increased height to prevent overflow
-      padding: const EdgeInsets.all(15), // Reduced padding
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(15),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withValues(alpha: 0.1),
-            spreadRadius: 1,
-            blurRadius: 5,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            icon,
-            size: 35, // Slightly reduced icon size
-            color: const Color(0xFF197E46), // Dark green icon
-          ),
-          const SizedBox(height: 8), // Reduced spacing
-          Text(
-            title,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 13, // Slightly reduced font size
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF197E46), // Dark green text
+    return InkWell(
+      onTap: () {
+        if (title.contains('Canteen')) {
+          _showToast('The feature is not enabled');
+        } else if (title.contains('Transport')) {
+          _showToast('The feature is not enabled');
+        }
+      },
+      borderRadius: BorderRadius.circular(15),
+      child: Container(
+        height: 130, // Increased height to prevent overflow
+        padding: const EdgeInsets.all(15), // Reduced padding
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(15),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withValues(alpha: 0.1),
+              spreadRadius: 1,
+              blurRadius: 5,
+              offset: const Offset(0, 2),
             ),
-          ),
-        ],
+          ],
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              icon,
+              size: 35, // Slightly reduced icon size
+              color: const Color(0xFF197E46), // Dark green icon
+            ),
+            const SizedBox(height: 8), // Reduced spacing
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 13, // Slightly reduced font size
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF197E46), // Dark green text
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -223,38 +234,54 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildToolBox(String title, IconData icon) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(15),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withValues(alpha: 0.1),
-            spreadRadius: 1,
-            blurRadius: 5,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            icon,
-            size: 28, // Slightly reduced icon size
-            color: const Color(0xFF197E46), // Dark green icon
-          ),
-          const SizedBox(height: 6), // Reduced spacing
-          Text(
-            title,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 11, // Slightly reduced font size
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF197E46), // Dark green text
+    return InkWell(
+      onTap: () {
+        if (title.contains('Attendance Mark')) {
+          Navigator.of(context).pushNamed('/attendance-mark');
+        } else if (title.contains('CGPA')) {
+          Navigator.of(context).pushNamed('/cgpa-calculator');
+        } else if (title.contains('Tuition Fees')) {
+          Navigator.of(context).pushNamed('/tuition-fee-calculator');
+        } else if (title.contains('Student Portal')) {
+          _launchStudentPortal();
+        } else if (title.contains('Routine')) {
+          _showToast('The feature is not enabled');
+        }
+      },
+      borderRadius: BorderRadius.circular(15),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(15),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withValues(alpha: 0.1),
+              spreadRadius: 1,
+              blurRadius: 5,
+              offset: const Offset(0, 2),
             ),
-          ),
-        ],
+          ],
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              icon,
+              size: 28, // Slightly reduced icon size
+              color: const Color(0xFF197E46), // Dark green icon
+            ),
+            const SizedBox(height: 6), // Reduced spacing
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 11, // Slightly reduced font size
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF197E46), // Dark green text
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -429,5 +456,24 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ],
     );
+  }
+
+  void _showToast(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        duration: const Duration(seconds: 2),
+        backgroundColor: Colors.grey[800],
+      ),
+    );
+  }
+
+  void _launchStudentPortal() async {
+    final Uri url = Uri.parse('https://studentportal.green.edu.bd/Account/Login');
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url, mode: LaunchMode.externalApplication);
+    } else {
+      _showToast('Could not open Student Portal');
+    }
   }
 } 

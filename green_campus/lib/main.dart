@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'splash_screen.dart';
 import 'home_screen.dart';
+import 'attendance_mark_calculator.dart';
+import 'cgpa_calculator.dart';
+import 'tuition_fee_calculator.dart';
 
 void main() {
   runApp(const MyApp());
@@ -39,6 +42,9 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => const SplashScreen(),
         '/home': (context) => const HomeScreen(),
+        '/attendance-mark': (context) => const AttendanceMarkCalculatorPage(),
+        '/cgpa-calculator': (context) => const CGPACalculatorPage(),
+        '/tuition-fee-calculator': (context) => const TuitionFeeCalculatorPage(),
       },
     );
   }

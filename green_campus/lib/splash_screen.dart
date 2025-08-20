@@ -50,10 +50,10 @@ class _SplashScreenState extends State<SplashScreen>
     _fadeController.forward();
     _scaleController.forward();
 
-    // Navigate to main screen after 4 seconds
+    // Navigate to login page after 4 seconds
     Timer(const Duration(seconds: 4), () {
       _fadeController.reverse().then((_) {
-        Navigator.of(context).pushReplacementNamed('/home');
+        Navigator.of(context).pushReplacementNamed('/login');
       });
     });
   }

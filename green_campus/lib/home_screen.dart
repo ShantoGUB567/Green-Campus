@@ -56,6 +56,12 @@ class _HomeScreenState extends State<HomeScreen> {
               // TODO: Implement notifications
             },
           ),
+          IconButton(
+            icon: const Icon(Icons.logout, color: Colors.white), // Logout icon
+            onPressed: () {
+              _showLogoutDialog();
+            },
+          ),
         ],
       ),
       body: SafeArea(
@@ -469,11 +475,45 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _launchStudentPortal() async {
-    final Uri url = Uri.parse('https://studentportal.green.edu.bd/Account/Login');
-    if (await canLaunchUrl(url)) {
-      await launchUrl(url, mode: LaunchMode.externalApplication);
-    } else {
-      _showToast('Could not open Student Portal');
+    try {
+      final Uri url = Uri.parse('https://studentportal.green.edu.bd/Account/Login');
+      if (await canLaunchUrl(url)) {
+        await launchUrl(
+          url, 
+          mode: LaunchMode.externalApplication,
+        );
+      } else {
+        _showToast('Could not open Student Portal');
+      }
+    } catch (e) {
+      _showToast('Error opening Student Portal: $e');
     }
+  }
+
+  void _showLogoutDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Logout'),
+          content: const Text('Are you sure you want to logout?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.of(context).pushReplacementNamed('/login');
+              },
+              child: const Text('Logout'),
+            ),
+          ],
+        );
+      },
+    );
   }
 } 

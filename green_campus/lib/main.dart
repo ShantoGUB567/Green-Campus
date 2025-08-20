@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'splash_screen.dart';
 import 'home_screen.dart';
+import 'login_page.dart';
+import 'register_page.dart';
 import 'attendance_mark_calculator.dart';
 import 'cgpa_calculator.dart';
 import 'tuition_fee_calculator.dart';
@@ -41,6 +43,8 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => const SplashScreen(),
+        '/login': (context) => const LoginPage(),
+        '/register': (context) => const RegisterPage(),
         '/home': (context) => const HomeScreen(),
         '/attendance-mark': (context) => const AttendanceMarkCalculatorPage(),
         '/cgpa-calculator': (context) => const CGPACalculatorPage(),

@@ -12,6 +12,11 @@
 .swiftpm/
 migrate_working_dir/
 
+# Environment variables
+.env
+.env.local
+.env.production
+
 # IntelliJ related
 *.iml
 *.ipr
@@ -43,6 +48,3 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
-
-# Firebase configuration files (contains sensitive API keys)
-lib/firebase_options.dart

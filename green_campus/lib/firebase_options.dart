@@ -3,6 +3,7 @@
 import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, kIsWeb, TargetPlatform;
+import 'config/firebase_config.dart';
 
 /// Default [FirebaseOptions] for use with your Firebase apps.
 ///
@@ -46,8 +47,8 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyDTmPHuiAhpVn-Rnad43m2aV3Qaoifxja8',
+  static FirebaseOptions get web => FirebaseOptions(
+    apiKey: FirebaseConfig.webApiKey,
     appId: '1:97991498696:web:36d5010a4a742626d83efd',
     messagingSenderId: '97991498696',
     projectId: 'greencampus-949c7',
@@ -56,16 +57,16 @@ class DefaultFirebaseOptions {
     measurementId: 'G-N837RY5GRE',
   );
 
-  static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyD9y0_zmqShO46gNZgd3Ez3xhAmu4lGHFM',
+  static FirebaseOptions get android => FirebaseOptions(
+    apiKey: FirebaseConfig.androidApiKey,
     appId: '1:97991498696:android:79064442d1779af1d83efd',
     messagingSenderId: '97991498696',
     projectId: 'greencampus-949c7',
     storageBucket: 'greencampus-949c7.firebasestorage.app',
   );
 
-  static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyD6Mmy6Kr78XYHj6HNaQ0nmjBv8TE4Z9ok',
+  static FirebaseOptions get ios => FirebaseOptions(
+    apiKey: FirebaseConfig.iosApiKey,
     appId: '1:97991498696:ios:033a1b6ba23d3041d83efd',
     messagingSenderId: '97991498696',
     projectId: 'greencampus-949c7',

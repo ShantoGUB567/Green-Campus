@@ -17,6 +17,9 @@ migrate_working_dir/
 .env.local
 .env.production
 
+# Firebase configuration (contains API keys)
+lib/config/firebase_config.dart
+
 # IntelliJ related
 *.iml
 *.ipr

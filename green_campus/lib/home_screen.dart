@@ -12,6 +12,21 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
   final TextEditingController _searchController = TextEditingController();
+  Map<String, dynamic>? _userData;
+
+  @override
+  void initState() {
+    super.initState();
+    // Get user data from navigation arguments
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final args = ModalRoute.of(context)?.settings.arguments;
+      if (args != null && args is Map<String, dynamic>) {
+        setState(() {
+          _userData = args;
+        });
+      }
+    });
+  }
 
   @override
   void dispose() {
@@ -84,11 +99,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
               // Information Section
               _buildInformationSection(),
-              const SizedBox(height: 20),
-
-              // Websites Section
-              _buildWebsitesSection(),
-              const SizedBox(height: 30), // Extra padding at bottom
+              const SizedBox(height: 30),
+              _buildWebsiteSection(),
+              const SizedBox(height: 30),
             ],
           ),
         ),
@@ -98,6 +111,9 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildGreetingsBox() {
+    String nickname = _userData?['nickname'] ?? 'User';
+    String studentId = _userData?['studentId'] ?? 'N/A';
+    
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
@@ -117,7 +133,7 @@ class _HomeScreenState extends State<HomeScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Hey John',
+            'Hey $nickname',
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
@@ -126,7 +142,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           const SizedBox(height: 5),
           Text(
-            'Student ID: 2023-123-456',
+            'Student ID: $studentId',
             style: TextStyle(
               fontSize: 16,
               color: const Color(0xFF197E46), // Dark green text for contrast
@@ -249,9 +265,18 @@ class _HomeScreenState extends State<HomeScreen> {
         } else if (title.contains('Tuition Fees')) {
           Navigator.of(context).pushNamed('/tuition-fee-calculator');
         } else if (title.contains('Student Portal')) {
-          _launchStudentPortal();
+          Navigator.of(context).pushNamed('/student-portal');
         } else if (title.contains('Routine')) {
           _showToast('The feature is not enabled');
+        } else if (title.contains('Academic')) {
+          Navigator.of(context).pushNamed('/academic-calendar');
+        } else if (title.contains('Transport Booking')) {
+          // Check user type to show appropriate activity
+          if (_userData?['userType'] == 'Transport') {
+            Navigator.of(context).pushNamed('/transport-info');
+          } else {
+            Navigator.of(context).pushNamed('/transport-booking', arguments: _userData);
+          }
         }
       },
       borderRadius: BorderRadius.circular(15),
@@ -314,44 +339,58 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildInfoItem(String title, IconData icon) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      padding: const EdgeInsets.all(15),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withValues(alpha: 0.1),
-            spreadRadius: 1,
-            blurRadius: 3,
-            offset: const Offset(0, 1),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Icon(
-            icon,
-            color: const Color(0xFF197E46), // Dark green icon
-            size: 24,
-          ),
-          const SizedBox(width: 15),
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-              color: Color(0xFF197E46), // Dark green text
+    return InkWell(
+      onTap: () {
+        if (title == 'Campus Info') {
+          Navigator.of(context).pushNamed('/campus-info');
+        } else if (title == 'Faculty Info') {
+          Navigator.of(context).pushNamed('/faculty-info');
+        } else if (title == 'Clubs Info') {
+          Navigator.of(context).pushNamed('/clubs-info');
+        } else if (title == 'Important Contacts') {
+          Navigator.of(context).pushNamed('/important-contacts');
+        }
+      },
+      borderRadius: BorderRadius.circular(10),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 10),
+        padding: const EdgeInsets.all(15),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withValues(alpha: 0.1),
+              spreadRadius: 1,
+              blurRadius: 3,
+              offset: const Offset(0, 1),
             ),
-          ),
-          const Spacer(),
-          const Icon(
-            Icons.arrow_forward_ios,
-            color: Colors.grey,
-            size: 16,
-          ),
-        ],
+          ],
+        ),
+        child: Row(
+          children: [
+            Icon(
+              icon,
+              color: const Color(0xFF197E46), // Dark green icon
+              size: 24,
+            ),
+            const SizedBox(width: 15),
+            Text(
+              title,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                color: Color(0xFF197E46), // Dark green text
+              ),
+            ),
+            const Spacer(),
+            const Icon(
+              Icons.arrow_forward_ios,
+              color: Colors.grey,
+              size: 16,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -435,6 +474,98 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  Widget _buildWebsiteSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Website Links',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Colors.grey[800],
+          ),
+        ),
+        const SizedBox(height: 15),
+        _buildWebsiteLink('Official Website', 'https://www.green.edu.bd/', Icons.language),
+        _buildWebsiteLink('CSE Department', 'https://cse.green.edu.bd/', Icons.computer),
+        _buildWebsiteLink('EEE Department', 'https://eee.green.edu.bd/', Icons.electric_bolt),
+        _buildWebsiteLink('Software Department', 'https://swe.green.edu.bd/', Icons.code),
+        _buildWebsiteLink('Textile Department', 'https://tex.green.edu.bd/', Icons.style),
+        _buildWebsiteLink('BBA Department', 'https://bus.green.edu.bd/', Icons.business),
+        _buildWebsiteLink('LLB Department', 'https://law.green.edu.bd/', Icons.gavel),
+      ],
+    );
+  }
+
+  Widget _buildWebsiteLink(String title, String url, IconData icon) {
+    return InkWell(
+      onTap: () => _launchWebsite(url),
+      borderRadius: BorderRadius.circular(10),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 10),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.1),
+              spreadRadius: 1,
+              blurRadius: 5,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: const Color(0xFF197E46).withOpacity(0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(
+                icon,
+                color: const Color(0xFF197E46),
+                size: 24,
+              ),
+            ),
+            const SizedBox(width: 15),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF197E46),
+                    ),
+                  ),
+                  Text(
+                    url,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey[600],
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              Icons.arrow_forward_ios,
+              size: 16,
+              color: Colors.grey[400],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildBottomNavigationBar() {
     return BottomNavigationBar(
       currentIndex: _selectedIndex,
@@ -442,6 +573,17 @@ class _HomeScreenState extends State<HomeScreen> {
         setState(() {
           _selectedIndex = index;
         });
+        
+        // Navigate to appropriate screen based on tab
+        if (index == 1) { // Transport tab
+          if (_userData?['userType'] == 'Transport') {
+            Navigator.of(context).pushNamed('/transport-info');
+          } else {
+            Navigator.of(context).pushNamed('/transport-booking', arguments: _userData);
+          }
+        } else if (index == 2) { // Profile tab
+          Navigator.of(context).pushNamed('/profile', arguments: _userData);
+        }
       },
       type: BottomNavigationBarType.fixed,
       backgroundColor: Colors.white,
@@ -453,8 +595,8 @@ class _HomeScreenState extends State<HomeScreen> {
           label: 'Home',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.group),
-          label: 'Club',
+          icon: Icon(Icons.directions_bus),
+          label: 'Transport',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.person),
@@ -487,6 +629,15 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     } catch (e) {
       _showToast('Error opening Student Portal: $e');
+    }
+  }
+
+  void _launchWebsite(String url) async {
+    final Uri uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.platformDefault);
+    } else {
+      _showToast('Could not open website: $url');
     }
   }
 

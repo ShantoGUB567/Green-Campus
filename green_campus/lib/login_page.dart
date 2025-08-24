@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'services/firebase_service.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -30,29 +31,65 @@ class _LoginPageState extends State<LoginPage> {
         _isLoading = true;
       });
       
-      // Simulate login process
-      await Future.delayed(const Duration(seconds: 1));
-      
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-        
-        // Show success message
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Login successful!'),
-            backgroundColor: Colors.green,
-            duration: Duration(seconds: 2),
-          ),
+      try {
+        // Test database connection first
+        final isConnected = await FirebaseService.testConnection();
+        if (!isConnected) {
+          throw Exception('Database connection failed');
+        }
+
+        // Attempt to login user
+        final userData = await FirebaseService.loginUser(
+          userType: _selectedUserType,
+          studentId: _idController.text.trim(),
+          password: _passwordController.text,
         );
-        
-        // Navigate to home page after successful login
-        Future.delayed(const Duration(seconds: 2), () {
-          if (mounted) {
-            Navigator.of(context).pushReplacementNamed('/home');
+
+        if (userData != null && mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+          
+          // Store user data for use in home screen
+          // You can use a state management solution like Provider or GetX here
+          // For now, we'll pass it through navigation arguments
+          
+          // Show success message
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Login successful!'),
+              backgroundColor: Colors.green,
+              duration: Duration(seconds: 2),
+            ),
+          );
+          
+          // Navigate to home page after successful login
+          Future.delayed(const Duration(seconds: 2), () {
+            if (mounted) {
+              Navigator.of(context).pushReplacementNamed('/home', arguments: userData);
+            }
+          });
+        }
+      } catch (e) {
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+          
+          // Show specific error message
+          String errorMessage = 'Login failed';
+          if (e.toString().contains('User not found')) {
+            errorMessage = 'User not found. Please check your ID and user type.';
+          } else if (e.toString().contains('Invalid password')) {
+            errorMessage = 'Invalid password. Please try again.';
+          } else if (e.toString().contains('Database connection failed')) {
+            errorMessage = 'Database connection failed. Please check your internet connection.';
+          } else {
+            errorMessage = 'Login failed: ${e.toString()}';
           }
-        });
+          
+          _showToast(errorMessage);
+        }
       }
     }
   }

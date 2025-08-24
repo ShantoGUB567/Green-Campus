@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'services/firebase_service.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -9,7 +10,8 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage> {
   final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
+  final _fullNameController = TextEditingController();
+  final _nicknameController = TextEditingController();
   final _idController = TextEditingController();
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
@@ -22,7 +24,8 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   void dispose() {
-    _nameController.dispose();
+    _fullNameController.dispose();
+    _nicknameController.dispose();
     _idController.dispose();
     _emailController.dispose();
     _phoneController.dispose();
@@ -37,29 +40,60 @@ class _RegisterPageState extends State<RegisterPage> {
         _isLoading = true;
       });
       
-      // Simulate registration process
-      await Future.delayed(const Duration(seconds: 1));
-      
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-        
-        // Show success message
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Registration successful!'),
-            backgroundColor: Colors.green,
-            duration: Duration(seconds: 2),
-          ),
+      try {
+        // Test database connection first
+        final isConnected = await FirebaseService.testConnection();
+        if (!isConnected) {
+          throw Exception('Database connection failed');
+        }
+
+        // Register user
+        final success = await FirebaseService.registerUser(
+          userType: _selectedUserType,
+          fullName: _fullNameController.text.trim(),
+          nickname: _nicknameController.text.trim(),
+          studentId: _idController.text.trim(),
+          email: _emailController.text.trim(),
+          phone: _phoneController.text.trim(),
+          password: _passwordController.text,
         );
-        
-        // Navigate to login page after successful registration
-        Future.delayed(const Duration(seconds: 2), () {
-          if (mounted) {
-            Navigator.of(context).pushReplacementNamed('/login');
-          }
-        });
+
+        if (success && mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+          
+          // Show success message
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Registration successful!'),
+              backgroundColor: Colors.green,
+              duration: Duration(seconds: 2),
+            ),
+          );
+          
+          // Navigate to login page after successful registration
+          Future.delayed(const Duration(seconds: 2), () {
+            if (mounted) {
+              Navigator.of(context).pushReplacementNamed('/login');
+            }
+          });
+        }
+      } catch (e) {
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+          
+          // Show error message
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Registration failed: ${e.toString()}'),
+              backgroundColor: Colors.red,
+              duration: const Duration(seconds: 3),
+            ),
+          );
+        }
       }
     }
   }
@@ -166,9 +200,9 @@ class _RegisterPageState extends State<RegisterPage> {
                 
                 // Name Input Field
                 TextFormField(
-                  controller: _nameController,
+                  controller: _fullNameController,
                   decoration: InputDecoration(
-                    labelText: 'Name',
+                    labelText: 'Full Name',
                     hintText: 'Enter your full name',
                     prefixIcon: const Icon(Icons.person_outline, color: Color(0xFF197E46)),
                     border: OutlineInputBorder(
@@ -187,10 +221,44 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter your name';
+                      return 'Please enter your full name';
                     }
                     if (value.length < 2) {
                       return 'Name must be at least 2 characters';
+                    }
+                    return null;
+                  },
+                ),
+                
+                const SizedBox(height: 16),
+                
+                // Nickname Input Field
+                TextFormField(
+                  controller: _nicknameController,
+                  decoration: InputDecoration(
+                    labelText: 'Nickname',
+                    hintText: 'Enter your nickname (optional)',
+                    prefixIcon: const Icon(Icons.person, color: Color(0xFF197E46)),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: Colors.grey.shade300),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(color: Color(0xFF197E46), width: 2),
+                    ),
+                    filled: true,
+                    fillColor: Colors.white,
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your nickname';
+                    }
+                    if (value.length < 2) {
+                      return 'Nickname must be at least 2 characters';
                     }
                     return null;
                   },

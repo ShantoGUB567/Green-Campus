@@ -228,6 +228,28 @@ class _SplashScreenState extends State<SplashScreen>
                               ],
                             ),
                           ),
+                          SizedBox(height: screenHeight * 0.02),
+                          // Test Connection Button
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pushReplacementNamed('/test-connection');
+                            },
+                            style: TextButton.styleFrom(
+                              backgroundColor: Colors.white.withOpacity(0.2),
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                            ),
+                            child: const Text(
+                              'Test Firebase Connection',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                     ),

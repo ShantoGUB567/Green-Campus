@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "97991498696",
+    "project_id": "greencampus-949c7",
+    "storage_bucket": "greencampus-949c7.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:97991498696:android:79064442d1779af1d83efd",
+        "android_client_info": {
+          "package_name": "com.example.green_campus"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD9y0_zmqShO46gNZgd3Ez3xhAmu4lGHFM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

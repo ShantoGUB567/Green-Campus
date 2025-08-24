@@ -36,8 +36,7 @@ class DefaultFirebaseOptions {
         );
       case TargetPlatform.linux:
         throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for linux - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
+          'DefaultFirebaseOptions are not supported for this platform.',
         );
       default:
         throw UnsupportedError(
@@ -47,29 +46,29 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyDTmPHuiAhpVn-Rnad43m2aV3Qaoifxja8',
-    appId: '1:97991498696:web:36d5010a4a742626d83efd',
-    messagingSenderId: '97991498696',
-    projectId: 'greencampus-949c7',
-    authDomain: 'greencampus-949c7.firebaseapp.com',
-    storageBucket: 'greencampus-949c7.firebasestorage.app',
-    measurementId: 'G-N837RY5GRE',
+    apiKey: 'YOUR_WEB_API_KEY_HERE',
+    appId: 'YOUR_WEB_APP_ID_HERE',
+    messagingSenderId: 'YOUR_MESSAGING_SENDER_ID_HERE',
+    projectId: 'YOUR_PROJECT_ID_HERE',
+    authDomain: 'YOUR_AUTH_DOMAIN_HERE',
+    storageBucket: 'YOUR_STORAGE_BUCKET_HERE',
+    measurementId: 'YOUR_MEASUREMENT_ID_HERE',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyD9y0_zmqShO46gNZgd3Ez3xhAmu4lGHFM',
-    appId: '1:97991498696:android:79064442d1779af1d83efd',
-    messagingSenderId: '97991498696',
-    projectId: 'greencampus-949c7',
-    storageBucket: 'greencampus-949c7.firebasestorage.app',
+    apiKey: 'YOUR_ANDROID_API_KEY_HERE',
+    appId: 'YOUR_ANDROID_APP_ID_HERE',
+    messagingSenderId: 'YOUR_MESSAGING_SENDER_ID_HERE',
+    projectId: 'YOUR_PROJECT_ID_HERE',
+    storageBucket: 'YOUR_STORAGE_BUCKET_HERE',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyD6Mmy6Kr78XYHj6HNaQ0nmjBv8TE4Z9ok',
-    appId: '1:97991498696:ios:033a1b6ba23d3041d83efd',
-    messagingSenderId: '97991498696',
-    projectId: 'greencampus-949c7',
-    storageBucket: 'greencampus-949c7.firebasestorage.app',
-    iosBundleId: 'com.example.greenCampus',
+    apiKey: 'YOUR_IOS_API_KEY_HERE',
+    appId: 'YOUR_IOS_APP_ID_HERE',
+    messagingSenderId: 'YOUR_MESSAGING_SENDER_ID_HERE',
+    projectId: 'YOUR_PROJECT_ID_HERE',
+    storageBucket: 'YOUR_STORAGE_BUCKET_HERE',
+    iosBundleId: 'YOUR_IOS_BUNDLE_ID_HERE',
   );
 }

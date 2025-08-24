@@ -43,8 +43,32 @@ lib/
 
 1. Ensure you have Flutter installed and set up
 2. Clone the repository
-3. Run `flutter pub get` to install dependencies
-4. Run `flutter run` to start the app
+3. **Configure Firebase** (see [FIREBASE_SETUP.md](FIREBASE_SETUP.md) for detailed instructions)
+4. Run `flutter pub get` to install dependencies
+5. Run `flutter run` to start the app
+
+## 🔒 Security & Firebase Configuration
+
+### ⚠️ Important Security Notice
+This project uses Firebase services and contains sensitive API keys. To ensure security:
+
+1. **Never commit `lib/firebase_options.dart`** - This file contains real API keys
+2. **Use the template file** - `lib/firebase_options.template.dart` is safe to commit
+3. **Follow the setup guide** - See [FIREBASE_SETUP.md](FIREBASE_SETUP.md) for detailed instructions
+
+### Quick Firebase Setup
+```bash
+# Install FlutterFire CLI
+dart pub global activate flutterfire_cli
+
+# Configure Firebase (this creates firebase_options.dart with real keys)
+flutterfire configure
+```
+
+### If you see GitHub security alerts:
+- The alerts are about exposed API keys in `firebase_options.dart`
+- Follow the steps in [FIREBASE_SETUP.md](FIREBASE_SETUP.md) to resolve them
+- Rotate your Firebase API keys if they were exposed
 
 ## Responsive Design Features
 
